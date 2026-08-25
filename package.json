@@ -1,0 +1,9 @@
+{
+  "name": "brand-wechat-formatter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "品牌官号公众号排版器：粘贴原文一键排版，复制到公众号样式不丢失（纯前端零依赖原型）",
+  "scripts": {
+    "serve": "npx --yes serve . -l 8080"
+  }
+}

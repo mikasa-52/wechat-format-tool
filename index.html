@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>品牌官号排版器 · 粘贴文字一键排版，复制到公众号</title>
+<meta name="description" content="为品牌方官方公众号设计的排版工具：粘贴原文 → 一键排版 → 复制到公众号，内置英伟达绿等品牌模板，样式不丢失。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2376B900'/%3E%3Cpath d='M18 24h28M18 34h22M18 44h16' stroke='white' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="logo" aria-label="品牌官号排版器">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 14h16M12 20h12M12 26h8" stroke="white" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <div class="brand-text">
+      <h1>品牌官号排版器</h1>
+      <p>粘贴原文 → 一键排版 → 复制到公众号 · 数据不出浏览器</p>
+    </div>
+  </div>
+  <nav class="tpl-pills" id="tplPills" aria-label="品牌风格模板"></nav>
+  <div class="top-actions">
+    <button id="btnCopy" class="btn btn-dark" title="复制后到公众号编辑器里粘贴即可">复制到公众号</button>
+    <button id="btnDownload" class="btn btn-ghost">下载 HTML</button>
+  </div>
+</header>
+
+<div class="custom-panel" id="customPanel" hidden>
+  <div class="cp-head">
+    <b>品牌配色定制</b>
+    <span class="hint">填品牌主色，自动生成整套模板：标题 / 引文 / 强调 / 按钮全联动</span>
+  </div>
+  <div class="cp-row">
+    <span class="cp-label">品牌主色</span>
+    <input type="color" id="cpColor" value="#76B900" aria-label="选择品牌主色">
+    <input type="text" id="cpHex" value="#76B900" maxlength="7" spellcheck="false" aria-label="品牌主色色值">
+    <button id="cpReset" class="btn btn-ghost btn-sm" title="放弃自定义，回到内置模板">恢复内置模板</button>
+  </div>
+  <div class="cp-demo">
+    <span class="swatch" id="cpSwA" title="品牌主色"></span>
+    <span class="swatch" id="cpSwD" title="强调深色"></span>
+    <span class="swatch" id="cpSwQ" title="引文背景"></span>
+    <span class="swatch-wide" id="cpSwBtn">按钮文字</span>
+  </div>
+</div>
+
+<main class="layout">
+
+  <!-- ① 输入区 -->
+  <section class="panel input-panel">
+    <div class="panel-head">
+      <h2><span class="step">①</span> 粘贴原文</h2>
+      <span class="hint">可写 <code>#</code> <code>&gt;</code> <code>**</code> <code>-</code> <code>---</code> 精细标记；不写也能自动识别</span>
+    </div>
+    <textarea id="input" spellcheck="false" placeholder="把你写好的文字粘贴到这里，然后点击「一键排版」…&#10;&#10;提示：支持 Markdown 风格标记：# 小标题、&gt; 引文、**重点**、- 列表、--- 分隔线；不写标记也会自动识别结构。"></textarea>
+    <div class="input-foot">
+      <div class="stats" id="stats">0 字 · 0 行</div>
+      <div class="actions">
+        <button id="btnFormat" class="btn btn-primary btn-big">✦ 一键排版</button>
+        <button id="btnSample" class="btn btn-ghost">载入示例</button>
+        <button id="btnClear" class="btn btn-ghost">清空</button>
+      </div>
+    </div>
+    <div class="clean-note" id="cleanNote" hidden></div>
+  </section>
+
+  <!-- ② 预览区 -->
+  <section class="panel preview-panel">
+    <div class="panel-head">
+      <h2><span class="step">②</span> 成品预览</h2>
+      <span class="hint" id="tplMeta">英伟达绿 · 科技风</span>
+    </div>
+    <div class="phone">
+      <div class="phone-bar"><span></span><span></span><span></span><em>公众号 · 预览</em></div>
+      <iframe id="preview" class="preview-iframe" title="成品预览"></iframe>
+    </div>
+    <div class="chips" id="specChips"></div>
+    <div class="chips" id="structChips"></div>
+  </section>
+
+  <!-- ③ 发布前检查（独立右侧栏，滚动时保持可见） -->
+  <section class="panel check-panel">
+    <div class="panel-head">
+      <h2><span class="step">③</span> 发布前检查</h2>
+      <span class="hint">极限词 / 夸大词 / 诱导词自动扫描</span>
+    </div>
+    <div class="check-idle" id="checkIdle">点击「✦ 一键排版」后自动扫描，无需手动操作。</div>
+    <div class="check-box" id="checkBox" hidden>
+      <div class="check-head">
+        <span class="check-ico" id="checkIco">✓</span>
+        <b id="checkTitle">发布前检查</b>
+      </div>
+      <div class="check-body" id="checkBody"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="page-foot">品牌官号排版器 · 纯前端原型（零依赖、可离线运行）· 复制产物为公众号兼容的内联样式 HTML</footer>
+
+<div id="toast" class="toast" hidden></div>
+<div id="copyHolder" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;"></div>
+
+<script src="js/templates.js"></script>
+<script src="js/cleaner.js"></script>
+<script src="js/formatter.js"></script>
+<script src="js/sensitive-words.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
